@@ -1,0 +1,34 @@
+name: Deploy .NET Core Application with Docker
+
+on:
+  push:
+    branches:
+      - 'main'  
+  workflow_dispatch:  
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Detect changed projects
+      run: |
+        CHANGED_PROJECTS=$(curl -s http://your-api-endpoint/api/changes)
+        echo "Changed Projects: $CHANGED_PROJECTS"
+        echo "CHANGED_PROJECTS=$CHANGED_PROJECTS" >> $GITHUB_ENV
+      
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    steps:
+    - name: Build and deploy changed projects
+      env:
+        CHANGED_PROJECTS: ${{ env.CHANGED_PROJECTS }}
+      run: |
+        for project in $CHANGED_PROJECTS; do
+          echo "Building and deploying $project"
+          docker-compose build $project
+          docker-compose up -d $project
+        done
