@@ -13,7 +13,8 @@ namespace CheckChange.API.Controllers
         public IActionResult GetChangedProjects(string serviceName)
         {
             string repositoryUrl = GetRepositoryUrl(serviceName);
-            string localPath = Path.Combine("/tmp", serviceName);
+            string localPath = Path.Combine("D:\\tmp", serviceName);
+            
 
             // Clone hoặc pull repository
             if (!Directory.Exists(localPath))
@@ -26,7 +27,7 @@ namespace CheckChange.API.Controllers
             }
 
             // Kiểm tra thay đổi
-            var changedFiles = RunCommand($"git -C {localPath} diff --name-only HEAD main")
+            var changedFiles = RunCommand($"git -C {localPath} diff --name-only master~1 master")
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             var result = new List<string>();
@@ -43,8 +44,8 @@ namespace CheckChange.API.Controllers
             // Trả về URL repository tương ứng với service
             return serviceName switch
             {
-                "ServiceA" => "https://github.com/yourorg/ServiceA.git",
-                "ServiceB" => "https://github.com/yourorg/ServiceB.git",
+                "MicroArticle" => "https://github.com/chivy140820a/tool-checkchange-repository.git",
+                //"ServiceB" => " https://github.com/chivy140820a/tool-checkchange-repository.git",
                 _ => throw new ArgumentException("Invalid service name")
             };
         }
